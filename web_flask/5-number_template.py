@@ -40,7 +40,7 @@ def extract_int(n):
     """Ftn that returns number passed if its an integer"""
     if type(int(n)) == int:
         return "{} is a number".format(n)
-   
+
 
 @app.route('/number_template/<int:n>', strict_slashes=False)
 def display_page(n=None):
