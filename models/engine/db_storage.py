@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 '''DBStorage'''
 from sqlalchemy import create_engine as ce, MetaData as md
-from sqlalchemy.orm import sessionmaker as sm, relationship as rm, scoped_session
+from sqlalchemy.orm import sessionmaker as sm, scoped_session
 from os import getenv as ge
 from models.user import User
 from models.place import Place
@@ -42,7 +42,6 @@ class DBStorage:
         for obj in instances:
             key = "{}.{}".format(obj.__class__.__name__, obj.id)
             all_results[key] = obj
-        self.__session.close()
         return all_results
 
     def new(self, obj):
