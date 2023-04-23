@@ -17,14 +17,14 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         """Instantiates a new model"""
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
         if kwargs:
             s = "%Y-%m-%dT%H:%M:%S.%f"
             for key in kwargs:
                 if key in ['created_at', 'updated_at']:
-		    setattr(self, key, datetime.strptime(kwargs[key], s))
+                    setattr(self, key, datetime.strptime(kwargs[key], s))
                 elif key != '__class__':
                     setattr(self, key, kwargs[key])
                 if not hasattr(kwargs, 'id'):
