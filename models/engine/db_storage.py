@@ -21,43 +21,44 @@ class DBStorage:
         pwrd = ge('HBNB_MYSQL_PWD')
         host = ge('HBNB_MYSQL_HOST')
         dtbs = ge('HBNB_MYSQL_DB')
-        DBStorage.__engine = ce(f'mysql+mysqldb://{user}:{pwrd}@{host}/{dtbs}', pool_pre_ping=True)
+        self.__engine = ce('mysql+mysqldb://{}:{}@{}/{}'.format(
+                            user, pwrd, host, dtbs), pool_pre_ping=True)
         if ge('HBNB_ENV') == 'test':
             metadata = md()
-            metadata.reflect(bind=DBStorage.__engine)
-            metadata.drop_all(bind=DBStorage.__engine)
+            metadata.reflect(bind=self.__engine)
+            metadata.drop_all(bind=self.__engine)
 
     def all(self, cls=None):
         classes = [Amenity, State, City, Place, User, Review]
-        Session = sm(bind=DBStorage.__engine)
-        DBStorage.__session = Session()
+        Session = sm(bind=self.__engine)
+        self.__session = Session()
         all_results = {}
         if cls and cls in classes:
-            instances = DBStorage.__session.query(cls).all()
+            instances = self.__session.query(cls).all()
         else:
             instances = []
             for i in classes:
-                instances.extend(DBStorage.__session.query(i).all())
+                instances.extend(self.__session.query(i).all())
         for obj in instances:
-            key = f"{obj.__class__.__name__}.{obj.id}"
+            key = "{}.{}".format(obj.__class__.__name__, obj.id)
             all_results[key] = obj
-        DBStorage.__session.close()
+        self.__session.close()
         return all_results
 
     def new(self, obj):
-        DBStorage.__session.add(obj)
+        self.__session.add(obj)
 
     def save(self):
-        DBStorage.__session.commit()
+        self.__session.commit()
 
     def delete(self, obj=None):
         if obj:
-            DBStorage.__session.delete(obj)
+            self.__session.delete(obj)
 
     def reload(self):
-        Base.metadata.create_all(DBStorage.__engine)
-        Session = sm(bind=DBStorage.__engine, expire_on_commit=False)
-        DBStorage.__session = scoped_session(Session)
+        Base.metadata.create_all(self.__engine)
+        Session = sm(bind=self.__engine, expire_on_commit=False)
+        self.__session = scoped_session(Session)
 
     def close(self):
         """call remove() method on the private session attribute"""
